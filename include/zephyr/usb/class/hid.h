@@ -139,6 +139,8 @@ extern "C" {
 #define HID_USAGE_GEN_LEDS		0x08
 /** HID Button Usage page */
 #define HID_USAGE_GEN_BUTTON		0x09
+/** HID Consumer Usage Page */
+#define HID_USAGE_CONSUMER			0x0C
 
 /** HID Generic Desktop Undefined Usage ID */
 #define HID_USAGE_GEN_DESKTOP_UNDEFINED	0x00
@@ -160,6 +162,45 @@ extern "C" {
 #define HID_USAGE_GEN_DESKTOP_Y		0x31
 /** HID Generic Desktop Wheel Usage ID */
 #define HID_USAGE_GEN_DESKTOP_WHEEL	0x38
+
+
+// ooc - On Off Control. Logical 
+#define HID_USAGE_CONSUMER_MUTE 0xE2
+// rtc - re-trigger control min 0 max 1 signal level. 
+#define HID_USAGE_CONSUMER_VOLUME_INCREMENT 0xE9
+// rtc
+#define HID_USAGE_CONSUMER_VOLUME_DECREMENT 0xEA
+
+// HID Input bit meanings. Most are unused
+#define HID_INPUT_DATA (0 << 0)
+#define HID_INPUT_CONSTANT (1 << 0)
+
+#define HID_INPUT_ARRAY (0 << 1)
+#define HID_INPUT_VARIABLE (1 << 1)
+
+#define HID_INPUT_ABSOLUTE (0 << 2)
+#define HID_INPUT_RELATIVE (1 << 2)
+
+#define HID_INPUT_NOWRAP (0 << 3)
+#define HID_INPUT_WRAP (1 << 3)
+
+#define HID_INPUT_LINEAR (0 << 4)
+#define HID_INPUT_NONLINEAR (1 << 4)
+
+#define HID_INPUT_PREFERREDSTATE (0 << 5)
+#define HID_INPUT_NOPREFERREDSTATE (1 << 5)
+
+#define HID_INPUT_NONULLPOSITION (0 << 6)
+#define HID_INPUT_NULLSTATE (1 << 6)
+
+// Might be reserved?
+#define HID_INPUT_NONVOLATILE (0 << 7)
+#define HID_INPUT_VOLATILE (1 << 7)
+
+#define HID_INPUT_BITFIELD (0 << 8)
+#define HID_INPUT_BUFFEREDBYTES (1 << 8)
+
+// 9 - 31 RESERVED
 
 /**
  * @}
@@ -499,7 +540,8 @@ extern "C" {
 		HID_REPORT_SIZE(8),				\
 		HID_REPORT_COUNT(6),				\
 		HID_LOGICAL_MIN8(0),				\
-		HID_LOGICAL_MAX8(101),				\
+		/*HID_LOGICAL_MAX8(101),				*/\
+		HID_LOGICAL_MAX8(130),				/* Increase the max value to include volume codes? */\
 		HID_USAGE_PAGE(HID_USAGE_GEN_DESKTOP_KEYPAD),	\
 		/* HID_USAGE_MIN8(Reserved) */			\
 		HID_USAGE_MIN8(0),				\
@@ -507,6 +549,28 @@ extern "C" {
 		HID_USAGE_MAX8(101),				\
 		/* HID_INPUT (Data,Ary,Abs) */			\
 		HID_INPUT(0x00),				\
+	HID_END_COLLECTION,					\
+}
+
+/**
+ * @brief My added 
+ */
+#define HID_VOLUME_REPORT_DESC() {				\
+	HID_USAGE_PAGE(HID_USAGE_GEN_DESKTOP),			\
+	HID_USAGE(HID_USAGE_GEN_DESKTOP_KEYBOARD),		\
+	HID_COLLECTION(HID_COLLECTION_APPLICATION),		\
+		HID_USAGE_PAGE(HID_USAGE_CONSUMER),	\
+		/* Mute Control */ \
+		HID_USAGE(HID_USAGE_CONSUMER_MUTE), \
+		HID_LOGICAL_MIN8(0), \
+		HID_LOGICAL_MAX8(1), \
+		HID_REPORT_SIZE(1), \
+		HID_REPORT_COUNT(1), \
+		/* Unused Bits */ \
+		HID_INPUT(HID_INPUT_DATA | HID_INPUT_VARIABLE | HID_INPUT_RELATIVE | HID_INPUT_PREFERREDSTATE), \
+		HID_REPORT_COUNT(1), \
+		HID_REPORT_SIZE(7), \
+		HID_INPUT(HID_INPUT_CONSTANT | HID_INPUT_VARIABLE | HID_INPUT_ABSOLUTE), \
 	HID_END_COLLECTION,					\
 }
 

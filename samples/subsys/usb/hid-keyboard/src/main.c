@@ -17,7 +17,8 @@
 #include <zephyr/logging/log.h>
 LOG_MODULE_REGISTER(main, LOG_LEVEL_INF);
 
-static const uint8_t hid_report_desc[] = HID_KEYBOARD_REPORT_DESC();
+// static const uint8_t hid_report_desc[] = HID_KEYBOARD_REPORT_DESC();
+static const uint8_t hid_report_desc[] = HID_VOLUME_REPORT_DESC();
 
 enum kb_leds_idx {
 	KB_LED_NUMLOCK = 0,
@@ -32,17 +33,17 @@ static const struct gpio_dt_spec kb_leds[KB_LED_COUNT] = {
 	GPIO_DT_SPEC_GET_OR(DT_ALIAS(led2), gpios, {0}),
 };
 
-enum kb_report_idx {
-	KB_MOD_KEY = 0,
-	KB_RESERVED,
-	KB_KEY_CODE1,
-	KB_KEY_CODE2,
-	KB_KEY_CODE3,
-	KB_KEY_CODE4,
-	KB_KEY_CODE5,
-	KB_KEY_CODE6,
-	KB_REPORT_COUNT,
-};
+// enum kb_report_idx {
+// 	KB_MOD_KEY = 0,
+// 	KB_RESERVED,
+// 	KB_KEY_CODE1,
+// 	KB_KEY_CODE2,
+// 	KB_KEY_CODE3,
+// 	KB_KEY_CODE4,
+// 	KB_KEY_CODE5,
+// 	KB_KEY_CODE6,
+// 	KB_REPORT_COUNT,
+// };
 
 struct kb_event {
 	uint16_t code;
@@ -51,7 +52,8 @@ struct kb_event {
 
 K_MSGQ_DEFINE(kb_msgq, sizeof(struct kb_event), 2, 1);
 
-static uint8_t __aligned(sizeof(void *)) report[KB_REPORT_COUNT];
+// static uint8_t __aligned(sizeof(void *)) report[KB_REPORT_COUNT];
+static uint8_t __aligned(sizeof(void *)) report[1];
 static uint32_t kb_duration;
 static bool kb_ready;
 
@@ -200,42 +202,44 @@ int main(void)
 		switch (kb_evt.code) {
 		case INPUT_KEY_0:
 			if (kb_evt.value) {
-				report[KB_KEY_CODE1] = HID_KEY_NUMLOCK;
+				// report[KB_KEY_CODE1] = HID_KEY_A;//0x80; // Keyboard Volume Up
+				report[0] = 1;//0x80; // Keyboard Volume Up
 			} else {
-				report[KB_KEY_CODE1] = 0;
+				// report[KB_KEY_CODE1] = 0;
+				report[0] = 0;
 			}
 
 			break;
-		case INPUT_KEY_1:
-			if (kb_evt.value) {
-				report[KB_KEY_CODE2] = HID_KEY_CAPSLOCK;
-			} else {
-				report[KB_KEY_CODE2] = 0;
-			}
+		// case INPUT_KEY_1:
+		// 	if (kb_evt.value) {
+		// 		report[KB_KEY_CODE2] = HID_KEY_B;//  0x81; // Keyboard Volume Downab
+		// 	} else {
+		// 		report[KB_KEY_CODE2] = 0;
+		// 	}
 
-			break;
-		case INPUT_KEY_2:
-			if (kb_evt.value) {
-				report[KB_KEY_CODE3] = HID_KEY_SCROLLLOCK;
-			} else {
-				report[KB_KEY_CODE3] = 0;
-			}
+		// 	break;
+		// case INPUT_KEY_2:
+		// 	if (kb_evt.value) {
+		// 		report[KB_KEY_CODE3] = 0x7f; // Keyboard Muteab
+		// 	} else {
+		// 		report[KB_KEY_CODE3] = 0;
+		// 	}
 
-			break;
-		case INPUT_KEY_3:
-			if (kb_evt.value) {
-				report[KB_MOD_KEY] = HID_KBD_MODIFIER_RIGHT_ALT;
-				report[KB_KEY_CODE4] = HID_KEY_1;
-				report[KB_KEY_CODE5] = HID_KEY_2;
-				report[KB_KEY_CODE6] = HID_KEY_3;
-			} else {
-				report[KB_MOD_KEY] = HID_KBD_MODIFIER_NONE;
-				report[KB_KEY_CODE4] = 0;
-				report[KB_KEY_CODE5] = 0;
-				report[KB_KEY_CODE6] = 0;
-			}
+		// 	break;
+		// case INPUT_KEY_3:
+		// 	if (kb_evt.value) {
+		// 		report[KB_MOD_KEY] = HID_KBD_MODIFIER_RIGHT_ALT;
+		// 		report[KB_KEY_CODE4] = HID_KEY_1;
+		// 		report[KB_KEY_CODE5] = HID_KEY_2;
+		// 		report[KB_KEY_CODE6] = HID_KEY_3;
+		// 	} else {
+		// 		report[KB_MOD_KEY] = HID_KBD_MODIFIER_NONE;
+		// 		report[KB_KEY_CODE4] = 0;
+		// 		report[KB_KEY_CODE5] = 0;
+		// 		report[KB_KEY_CODE6] = 0;
+		// 	}
 
-			break;
+		// 	break;
 		default:
 			LOG_INF("Unrecognized input code %u value %d",
 				kb_evt.code, kb_evt.value);
